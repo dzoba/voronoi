@@ -7,7 +7,18 @@ const REFERENCE_HEIGHT = 1500;
 const REFERENCE_NUM_BALLS = 100;
 const BALLS_PER_AREA = REFERENCE_NUM_BALLS / (REFERENCE_WIDTH * REFERENCE_HEIGHT);
 
-const COLOR_PALETTE = ['#FF5733', '#FFBD33', '#DBFF33', '#75FF33', '#33FF57', '#33FFDB', '#3380FF', '#8233FF', '#FF33F9', '#FF3361'];
+function generateNewColorPalette() {
+  const numColors = 10;
+
+  const newColors = Array.from({ length: numColors }, () => {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = Math.floor(Math.random() * 100);
+    const lightness = Math.floor(Math.random() * 50) + 25; // Random lightness between 25% and 75%
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  });
+
+  return newColors;
+}
 
 
 function getNumBalls(width, height) {
@@ -49,6 +60,8 @@ class Ball {
 function App() {
   const canvasRef = useRef(null);
   const [showBalls, setShowBalls] = useState(false);
+  const [colorPalette, setColorPalette] = useState(['#D82B2B', '#E8A12D', '#F2D930', '#68C259', '#34B48E', '#2999C9', '#4570D8', '#884AD6', '#D74DBA', '#E04A6A']); // Create a new state for the color palette
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -91,7 +104,7 @@ function App() {
         voronoi.renderCell(i, ctx);
 
         // Fill cell with a color from the color palette
-        ctx.fillStyle = COLOR_PALETTE[i % COLOR_PALETTE.length];
+        ctx.fillStyle = colorPalette[i % colorPalette.length];
         ctx.fill();
 
         ctx.stroke();
@@ -120,19 +133,22 @@ function App() {
 
     animate();
     window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('keydown', (e) => {
-      console.log('e.key', e.key)
-      if (e.key === 'o') {
-        console.log
+    const keydownHandler = (e) => {
+      if (e.key === 'o' || e.key === 'O') {
         setShowBalls(!showBalls);
+      } else if (e.key === 'p' || e.key === 'P') {
+        setColorPalette(generateNewColorPalette()); // Update the color palette state with a new palette
       }
-    });
+    };
+
+    window.addEventListener('keydown', keydownHandler);
 
     // Clean up the event listener when the component is unmounted
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('keydown', keydownHandler);
     };
-  }, [showBalls]);
+  }, [showBalls, colorPalette]);
 
   return (
     <div className="App">
