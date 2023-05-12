@@ -11,6 +11,7 @@ const COLOR_PALETTE = ['#FF5733', '#FFBD33', '#DBFF33', '#75FF33', '#33FF57', '#
 
 
 function getNumBalls(width, height) {
+  console.log('width', width);
   return Math.round(width * height * BALLS_PER_AREA) + 5;
 }
 
@@ -51,19 +52,30 @@ function App() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
 
-    const numBalls = getNumBalls(canvas.width, canvas.height);
-    console.log('numBalls', numBalls)
+    let balls;
 
-    const balls = Array.from({ length: numBalls }, () => {
-      const x = Math.random() * (canvas.width - 2 * BALL_RADIUS) + BALL_RADIUS;
-      const y = Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS;
-      const dx = (Math.random() - 0.5) * 2;
-      const dy = (Math.random() - 0.5) * 2;
-      return new Ball(x, y, dx, dy, BALL_RADIUS);
-    });
+    const initBalls = () => {
+      const numBalls = getNumBalls(canvas.width, canvas.height);
+      console.log('numBalls', numBalls);
+
+      balls = Array.from({ length: numBalls }, () => {
+        const x = Math.random() * (canvas.width - 2 * BALL_RADIUS) + BALL_RADIUS;
+        const y = Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS;
+        const dx = (Math.random() - 0.5) * 2;
+        const dy = (Math.random() - 0.5) * 2;
+        return new Ball(x, y, dx, dy, BALL_RADIUS);
+      });
+    };
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initBalls(); // Recalculate the number of balls and reinitialize the balls array
+    };
+
+    resizeCanvas(); // Set initial canvas dimensions and initialize the balls
+
 
     const drawVoronoi = (balls) => {
       const points = balls.map(ball => [ball.x, ball.y]);
@@ -100,6 +112,12 @@ function App() {
     };
 
     animate();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
   }, []);
 
   return (
