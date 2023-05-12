@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Delaunay } from 'd3-delaunay';
 
 const BALL_RADIUS = 5;
@@ -48,6 +48,7 @@ class Ball {
 
 function App() {
   const canvasRef = useRef(null);
+  const [showBalls, setShowBalls] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -97,28 +98,41 @@ function App() {
       }
     };
 
-
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      balls.forEach(ball => {
-        ball.draw(ctx);
-        ball.update(canvas.width, canvas.height);
-      });
-
-      drawVoronoi(balls);
+      if (showBalls) {
+        drawVoronoi(balls);
+        balls.forEach(ball => {
+          ball.draw(ctx);
+          ball.update(canvas.width, canvas.height);
+        });
+      } else {
+        balls.forEach(ball => {
+          ball.draw(ctx);
+          ball.update(canvas.width, canvas.height);
+        });
+        drawVoronoi(balls);
+      }
 
       requestAnimationFrame(animate);
     };
 
     animate();
     window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('keydown', (e) => {
+      console.log('e.key', e.key)
+      if (e.key === 'o') {
+        console.log
+        setShowBalls(!showBalls);
+      }
+    });
 
     // Clean up the event listener when the component is unmounted
     return () => {
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, []);
+  }, [showBalls]);
 
   return (
     <div className="App">
