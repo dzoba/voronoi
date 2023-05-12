@@ -12,7 +12,7 @@ function generateNewColorPalette() {
 
   const newColors = Array.from({ length: numColors }, () => {
     const hue = Math.floor(Math.random() * 360);
-    const saturation = Math.floor(Math.random() * 100);
+    const saturation = Math.floor(Math.random() * 60) + 40; // Random saturation between 40% and 100%
     const lightness = Math.floor(Math.random() * 50) + 25; // Random lightness between 25% and 75%
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   });
