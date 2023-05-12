@@ -7,6 +7,9 @@ const REFERENCE_HEIGHT = 1500;
 const REFERENCE_NUM_BALLS = 100;
 const BALLS_PER_AREA = REFERENCE_NUM_BALLS / (REFERENCE_WIDTH * REFERENCE_HEIGHT);
 
+const COLOR_PALETTE = ['#FF5733', '#FFBD33', '#DBFF33', '#75FF33', '#33FF57', '#33FFDB', '#3380FF', '#8233FF', '#FF33F9', '#FF3361'];
+
+
 function getNumBalls(width, height) {
   return Math.round(width * height * BALLS_PER_AREA) + 5;
 }
@@ -73,9 +76,15 @@ function App() {
       for (let i = 0; i < points.length; i++) {
         ctx.beginPath();
         voronoi.renderCell(i, ctx);
+
+        // Fill cell with a color from the color palette
+        ctx.fillStyle = COLOR_PALETTE[i % COLOR_PALETTE.length];
+        ctx.fill();
+
         ctx.stroke();
       }
     };
+
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
